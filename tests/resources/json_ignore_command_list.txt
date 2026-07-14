@@ -586,3 +586,30 @@ queue, queue-admin, queue, update
 compute, compute-host, get
 compute, compute-host, update
 log-analytics, query, search
+ocvs, sddc, update
+identity-domains, identity-proofing-provider, create
+identity-domains, identity-proofing-provider, put
+identity-domains, identity-proofing-provider, search
+identity-domains, identity-proofing-provider-template, create
+identity-domains, identity-proofing-provider-template, put
+identity-domains, verification-claim, create
+limits-increase, limits-increase-request, create
+cloud-bridge, discovery, asset-source, create
+cloud-bridge, discovery, asset-source, update
+cloud-bridge, inventory, asset, update
+os-management-hub, managed-instance-group, list-managed-instances
+fusion-apps, fusion-environment, create
+fusion-apps, fusion-environment, update
+database-tools-runtime, database-tools-connection, execute-sql-database-tools-connection-execute-sql-output-object-storage-details
+database-tools-runtime, database-tools-database-api-gateway-config-pool-auto-api-spec, create
+database-tools-runtime, database-tools-database-api-gateway-config-pool-auto-api-spec, create-database-tools-database-api-gateway-config-pool-auto-api-spec-create-database-tools-database-api-gateway-config-pool-auto-api-spec-default-details
+database-tools-runtime, database-tools-database-api-gateway-config-pool-auto-api-spec, update
+database-tools-runtime, database-tools-database-api-gateway-config-pool-auto-api-spec, update-database-tools-database-api-gateway-config-pool-auto-api-spec-update-database-tools-database-api-gateway-config-pool-auto-api-spec-default-details
+dbtools-runtime, connection, execute-sql, async
+dbtools-runtime, database-api-gateway-config-pool-auto-api-spec, create, default
+dbtools-runtime, database-api-gateway-config-pool-auto-api-spec, update, default
+db, cloud-exa-infra, update
+opsi, opsi-private-endpoint, update
+db, database, create-from-backupdata-safe, private-endpoint, update
+db, database, create-from-backup
+data-safe, private-endpoint, update

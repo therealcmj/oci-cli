@@ -43,8 +43,14 @@ vcr_log.setLevel(logging.INFO)
 if not os.path.exists(os.path.join('tests', 'temp')):
     os.makedirs(os.path.join('tests', 'temp'))
 
-dynamic_loader.load_all_services()
-final_command_processor.process()
+
+def _load_services_for_pytest(service_name):
+    if service_name == "all":
+        dynamic_loader.load_all_services()
+    elif service_name not in dynamic_loader.NON_SERVICE_TOP_LEVEL_COMMANDS:
+        dynamic_loader.load_service(service_name)
+
+    final_command_processor.process()
 
 
 def pytest_addoption(parser):
@@ -70,6 +76,7 @@ def add_test_option(parser, option, action, default, help):
 
 def pytest_configure(config):
     test_config_container.vcr_mode = config.getoption("--vcr-record-mode")
+    _load_services_for_pytest(config.getoption("service"))
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -85,18 +92,32 @@ def move_cli_config_rc_file():
     moved_rc_file = False
     moved_rc_fallback_file = False
 
-    if os.path.lexists(expanded_rc_location):
+    # If pytest is executed with multiple workers, then the following block of code will be executed at the session
+    # start of every worker. Thus, there are chances of some workers attempting to move (rename) the rc file, after it
+    # was moved (renamed) by another, causing those workers to raise a `FileNotFoundError` exception. Since we don't
+    # bother which worker moves the rc file first, we can use a best-effort approach and catch the error and do nothing.
+    try:
         os.rename(expanded_rc_location, '{}.moved'.format(expanded_rc_location))
         print('Moved: {}'.format(expanded_rc_location))
         moved_rc_file = True
+    except FileNotFoundError as e:
+        print('File not found at {}. Already moved.'.format(expanded_rc_location))
+        # didn't move the rc file, so no need to set the `moved_rc_file` flag to True
+        pass
 
-    if os.path.lexists(expanded_rc_fallback_location):
+    # similarly
+    try:
         os.rename(expanded_rc_fallback_location, '{}.moved'.format(expanded_rc_fallback_location))
         print('Moved: {}'.format(expanded_rc_fallback_location))
         moved_rc_fallback_file = True
-
+    except FileNotFoundError as e:
+        print('File not found at {}. Already moved.'.format(expanded_rc_fallback_location))
+        pass
+    
     yield
 
+    # since only one of the workers will have toggled these flags, it is guaranteed that only one worker will move the
+    # files back.
     if moved_rc_file:
         os.rename('{}.moved'.format(expanded_rc_location), expanded_rc_location)
         print('Moved Back: {}'.format(expanded_rc_location))

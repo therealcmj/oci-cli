@@ -30,17 +30,17 @@ with open_relative("README.rst") as f:
     readme = f.read()
 
 requires = [
-    'oci==2.168.0',
+    'oci==2.182.0',
     'arrow>=1.0.0,<2.0.0',
     'certifi>=2025.1.31,<2026.0.0',
-    'click==8.0.4',
-    'cryptography>=3.2.1,<47.0.0',
+    'click<=8.1.2',
+    'cryptography>=3.2.1,<50.0.0',
     'jmespath>=0.10.0,<=1.0.1',
     'python-dateutil>=2.5.3,<3.0.0',
-    'pytz>=2016.10,<2025.0',
+    'pytz>=2016.10,<=2026.2',
     'six>=1.15.0,<2.0.0',
     'terminaltables==3.1.10',
-    'pyOpenSSL>=17.5.0,<=25.3.0',
+    'pyOpenSSL>=17.5.0,<27.0.0',
     'PyYAML>=5.4,<=6.0.2',
     'prompt-toolkit>=3.0.38,<=3.0.43; python_version > "3.6"',
     'prompt-toolkit==3.0.29; python_version == "3.6"',
@@ -81,7 +81,7 @@ setup_parameters = {
     "url": 'https://docs.cloud.oracle.com/iaas/Content/API/Concepts/cliconcepts.htm',
     "version": version,
     "author": 'Oracle',
-    "author_email": 'joe.levy@oracle.com',
+    "author_email": 'rajditya.shahdeo@oracle.com',
     "description": 'Oracle Cloud Infrastructure CLI',
     "long_description": readme,
     "entry_points": {

@@ -189,6 +189,7 @@ def get_management_appliance(ctx, from_json, management_appliance_id):
 @management_appliance_group.command(name=cli_util.override('management_appliance.list_management_appliances.command_name', 'list'), help=u"""Lists management appliances in compartment specified. List can be filtered by management appliance, compartment, name and lifecycle state. \n[Command Reference](listManagementAppliances)""")
 @cli_util.option('--compartment-id', required=True, help=u"""The [OCID] of the compartment.""")
 @cli_util.option('--management-appliance-id', help=u"""The [OCID] of the management appliance.""")
+@cli_util.option('--sddc-id', help=u"""The [OCID] of the SDDC.""")
 @cli_util.option('--display-name', help=u"""A filter to return only resources that match the given display name exactly.""")
 @cli_util.option('--lifecycle-state', type=custom_types.CliCaseInsensitiveChoice(["CREATING", "UPDATING", "ACTIVE", "NEEDS_ATTENTION", "DELETING", "DELETED", "FAILED"]), help=u"""The lifecycle state of the management appliance.""")
 @cli_util.option('--limit', type=click.INT, help=u"""For list pagination. The maximum number of results per page, or items to return in a paginated \"List\" call. For important details about how pagination works, see [List Pagination].""")
@@ -204,7 +205,7 @@ def get_management_appliance(ctx, from_json, management_appliance_id):
 @click.pass_context
 @json_skeleton_utils.json_skeleton_generation_handler(input_params_to_complex_types={}, output_type={'module': 'ocvp', 'class': 'ManagementApplianceCollection'})
 @cli_util.wrap_exceptions
-def list_management_appliances(ctx, from_json, all_pages, page_size, compartment_id, management_appliance_id, display_name, lifecycle_state, limit, page, sort_order, sort_by):
+def list_management_appliances(ctx, from_json, all_pages, page_size, compartment_id, management_appliance_id, sddc_id, display_name, lifecycle_state, limit, page, sort_order, sort_by):
 
     if all_pages and limit:
         raise click.UsageError('If you provide the --all option you cannot provide the --limit option')
@@ -212,6 +213,8 @@ def list_management_appliances(ctx, from_json, all_pages, page_size, compartment
     kwargs = {}
     if management_appliance_id is not None:
         kwargs['management_appliance_id'] = management_appliance_id
+    if sddc_id is not None:
+        kwargs['sddc_id'] = sddc_id
     if display_name is not None:
         kwargs['display_name'] = display_name
     if lifecycle_state is not None:

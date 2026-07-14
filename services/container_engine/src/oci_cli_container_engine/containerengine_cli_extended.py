@@ -137,12 +137,14 @@ containerengine_cli.cluster_group.add_command(generate_token)
  security groups (NSGs) to apply to the cluster endpoint. You must also specify --endpoint-subnet-id.""" + custom_types.cli_complex_type.COMPLEX_TYPE_HELP)
 @cli_util.option('--endpoint-public-ip-enabled', type=click.BOOL, help="""Whether the cluster should be assigned a public\
  IP address. Defaults to false. If set to true on a private subnet, the cluster provisioning will fail. You must also specify --endpoint-subnet-id.""")
+@cli_util.option('--endpoint-security-attributes', type=custom_types.CLI_COMPLEX_TYPE, help=u"""[Security attributes] are labels         for a resource that can be referenced in a [Zero Trust Packet Routing]         (ZPR) policy to control access to ZPR-supported resources.""" + custom_types.cli_complex_type.COMPLEX_TYPE_HELP)
 @cli_util.option('--ip-families', type=custom_types.CLI_COMPLEX_TYPE, help="""A list of IP families for the cluster. Example: '[\"IPv4\", \"IPv6\"]'""" + custom_types.cli_complex_type.COMPLEX_TYPE_HELP)
 @json_skeleton_utils.get_cli_json_input_option(
     {'defined-tags': {'module': 'container_engine', 'class': 'dict(str, dict(str, object))'},
      'freeform-tags': {'module': 'container_engine', 'class': 'dict(str, string)'},
      'service-lb-subnet-ids': {'module': 'container_engine', 'class': 'list[string]'},
      'endpoint-nsg-ids': {'module': 'container_engine', 'class': 'list[string]'},
+     'endpoint-security-attributes': {'module': 'container_engine', 'class': 'dict(str, dict(str, object))'},
      'service-lb-defined-tags': {'module': 'container_engine', 'class': 'dict(str, dict(str, object))'},
      'service-lb-freeform-tags': {'module': 'container_engine', 'class': 'dict(str, string)'},
      'persistent-volume-defined-tags': {'module': 'container_engine', 'class': 'dict(str, dict(str, object))'},
@@ -159,6 +161,7 @@ containerengine_cli.cluster_group.add_command(generate_token)
                                    'freeform-tags': {'module': 'container_engine', 'class': 'dict(str, string)'},
                                    'service-lb-subnet-ids': {'module': 'container_engine', 'class': 'list[string]'},
                                    'endpoint-nsg-ids': {'module': 'container_engine', 'class': 'list[string]'},
+                                   'endpoint-security-attributes': {'module': 'container_engine', 'class': 'dict(str, dict(str, object))'},
                                    'service-lb-defined-tags': {'module': 'container_engine', 'class': 'dict(str, dict(str, object))'},
                                    'service-lb-freeform-tags': {'module': 'container_engine', 'class': 'dict(str, string)'},
                                    'persistent-volume-defined-tags': {'module': 'container_engine', 'class': 'dict(str, dict(str, object))'},
@@ -173,13 +176,11 @@ containerengine_cli.cluster_group.add_command(generate_token)
 def create_cluster(ctx, **kwargs):
     kwargs['options'] = {}
     if 'service_lb_subnet_ids' in kwargs and kwargs['service_lb_subnet_ids'] is not None:
-        kwargs['options'] = {'serviceLbSubnetIds': cli_util.parse_json_parameter("service_lb_subnet_ids",
-                                                                                 kwargs['service_lb_subnet_ids'])}
+        kwargs['options']['serviceLbSubnetIds'] = cli_util.parse_json_parameter("service_lb_subnet_ids", kwargs['service_lb_subnet_ids'])
     kwargs.pop('service_lb_subnet_ids', None)
 
     if 'ip_families' in kwargs and kwargs['ip_families'] is not None:
-        kwargs['options'] = {'ipFamilies': cli_util.parse_json_parameter("ip_families",
-                                                                         kwargs['ip_families'])}
+        kwargs['options']['ipFamilies'] = cli_util.parse_json_parameter("ip_families", kwargs['ip_families'])
     kwargs.pop('ip_families', None)
 
     if 'dashboard_enabled' in kwargs and kwargs['dashboard_enabled'] is not None:
@@ -305,6 +306,10 @@ def create_cluster(ctx, **kwargs):
         raise click.UsageError(
             'Cannot specify --endpoint-public-ip-enabled without --endpoint-subnet-id'
         )
+    if kwargs.get('endpoint_security_attributes') and not kwargs.get('endpoint_subnet_id'):
+        raise click.UsageError(
+            'Cannot specify --endpoint-security-attributes without --endpoint-subnet-id'
+        )
 
     if 'endpoint_subnet_id' in kwargs and kwargs['endpoint_subnet_id'] is not None:
         kwargs['endpoint_config'] = {}
@@ -313,9 +318,12 @@ def create_cluster(ctx, **kwargs):
             kwargs['endpoint_config']['nsgIds'] = cli_util.parse_json_parameter("endpoint_nsg_ids", kwargs['endpoint_nsg_ids'])
         if 'endpoint_public_ip_enabled' in kwargs and kwargs['endpoint_public_ip_enabled'] is not None:
             kwargs['endpoint_config']['isPublicIpEnabled'] = kwargs['endpoint_public_ip_enabled']
+        if 'endpoint_security_attributes' in kwargs and kwargs['endpoint_security_attributes'] is not None:
+            kwargs['endpoint_config']['securityAttributes'] = cli_util.parse_json_parameter("endpoint_security_attributes", kwargs['endpoint_security_attributes'])
     kwargs.pop('endpoint_subnet_id', None)
     kwargs.pop('endpoint_nsg_ids', None)
     kwargs.pop('endpoint_public_ip_enabled', None)
+    kwargs.pop('endpoint_security_attributes', None)
 
     # It seems like the service needs options param even if it is empty so leave it when invoking the create command
 
@@ -340,6 +348,7 @@ def create_cluster(ctx, **kwargs):
 @cli_util.option('--max-pods-per-node', type=click.INT, help="""The maximum number of pods that will live on a node of the node pool.""")
 @cli_util.option('--pod-nsg-ids', type=custom_types.CLI_COMPLEX_TYPE, help="""The OCIDs of the Network Security Group(s) to associate pods for this node pool with.""" + custom_types.cli_complex_type.COMPLEX_TYPE_HELP)
 @cli_util.option('--pod-subnet-ids', type=custom_types.CLI_COMPLEX_TYPE, help="""The OCIDs of the subnets in which to place pods for this node pool.""" + custom_types.cli_complex_type.COMPLEX_TYPE_HELP)
+@cli_util.option('--cni-type', type=custom_types.CliCaseInsensitiveChoice(["OCI_VCN_IP_NATIVE", "FLANNEL_OVERLAY"]), help="""The CNI plugin used by this node pool.""")
 @json_skeleton_utils.get_cli_json_input_option(
     {'defined-tags': {'module': 'container_engine', 'class': 'dict(str, dict(str, object))'},
      'freeform-tags': {'module': 'container_engine', 'class': 'dict(str, string)'},
@@ -390,6 +399,15 @@ def create_node_pool(ctx, **kwargs):
         )
 
     nodePoolPodNetworkOptionDetails = {}
+    if 'cni_type' in kwargs and kwargs['cni_type'] is not None:
+        if kwargs['cni_type'] == "FLANNEL_OVERLAY" and kwargs.get('pod_subnet_ids'):
+            raise click.UsageError(
+                'Cannot specify --pod_subnet_ids with --cni-type FLANNEL_OVERLAY'
+            )
+        nodePoolPodNetworkOptionDetails['cniType'] = kwargs['cni_type']
+        kwargs['node_config_details']['nodePoolPodNetworkOptionDetails'] = nodePoolPodNetworkOptionDetails
+    kwargs.pop('cni_type', None)
+
     if 'max_pods_per_node' in kwargs and kwargs['max_pods_per_node'] is not None:
         nodePoolPodNetworkOptionDetails['maxPodsPerNode'] = cli_util.parse_json_parameter("max_pods_per_node", kwargs['max_pods_per_node'])
     kwargs.pop('max_pods_per_node', None)
@@ -401,8 +419,8 @@ def create_node_pool(ctx, **kwargs):
     # existence of pod_subnet_ids hints that the CNI used is OCI_VCN_IP_NATIVE
     # with it's absence, we will pass a null nodePoolPodNetworkOptionDetails, which means use default CNI FLANNEL_OVERLAY
     if 'pod_subnet_ids' in kwargs and kwargs['pod_subnet_ids'] is not None:
-        # if cniType is absent, defaults to FLANNEL
-        nodePoolPodNetworkOptionDetails['cniType'] = "OCI_VCN_IP_NATIVE"
+        if nodePoolPodNetworkOptionDetails.get('cni_type') is None:
+            nodePoolPodNetworkOptionDetails['cniType'] = "OCI_VCN_IP_NATIVE"
         nodePoolPodNetworkOptionDetails['podSubnetIds'] = cli_util.parse_json_parameter("pod_subnet_ids", kwargs['pod_subnet_ids'])
         kwargs['node_config_details']['nodePoolPodNetworkOptionDetails'] = nodePoolPodNetworkOptionDetails
     kwargs.pop('pod_subnet_ids', None)

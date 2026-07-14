@@ -183,6 +183,16 @@ service_mapping = {
         "Container Instance",
         "Others"
     ],
+    "container-registry": [
+        "container_registry",
+        "Container Registry",
+        "Others"
+    ],
+    "costad": [
+        "costad",
+        "CostAd",
+        "Others"
+    ],
     "cpg": [
         "cluster_placement_groups",
         "Cluster Placement Groups",
@@ -238,6 +248,11 @@ service_mapping = {
         "Database Migration",
         "Migration"
     ],
+    "datacc": [
+        "datacc",
+        "Database Infrastructure Cloud@Customer Service",
+        "Others"
+    ],
     "db": [
         "database",
         "Database Service",
@@ -257,6 +272,11 @@ service_mapping = {
         "database_tools",
         "Database Tools",
         "Developer Services"
+    ],
+    "dbtools-runtime": [
+        "database_tools_runtime",
+        "Database Tools Runtime",
+        "Others"
     ],
     "delegate-access-control": [
         "delegate_access_control",
@@ -343,6 +363,11 @@ service_mapping = {
         "Fusion Applications Environment Management",
         "Others"
     ],
+    "gdp": [
+        "gdp",
+        "Guarded Data Pipelines",
+        "Others"
+    ],
     "generative-ai": [
         "generative_ai",
         "Generative AI Service Management",
@@ -356,6 +381,11 @@ service_mapping = {
     "generative-ai-agent-runtime": [
         "generative_ai_agent_runtime",
         "Generative AI Agents Client",
+        "Others"
+    ],
+    "generative-ai-data": [
+        "generative_ai_data",
+        "Generative AI Service NL2SQL",
         "Others"
     ],
     "generative-ai-inference": [
@@ -446,6 +476,11 @@ service_mapping = {
     "limits": [
         "limits",
         "Service Limits",
+        "Governance & Administration"
+    ],
+    "limits-increase": [
+        "limits_increase",
+        "Limits Increase",
         "Governance & Administration"
     ],
     "log-analytics": [
@@ -585,7 +620,7 @@ service_mapping = {
     ],
     "opctl": [
         "operator_access_control",
-        "OperatorAccessControl",
+        "Operator Access Control",
         "Oracle Database"
     ],
     "opensearch": [
@@ -707,6 +742,11 @@ service_mapping = {
         "security_attribute",
         "Security Attribute",
         "Identity & Security"
+    ],
+    "self": [
+        "self",
+        "SELF Service",
+        "Others"
     ],
     "service-catalog": [
         "service_catalog",
