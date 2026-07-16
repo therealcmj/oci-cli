@@ -6,9 +6,6 @@ from __future__ import print_function
 import click
 from services.loggingsearch.src.oci_cli_log_search.generated import logsearch_cli
 from oci_cli import cli_util, json_skeleton_utils
-import click
-from oci_cli.aliasing import CommandGroupWithAlias
-from oci_cli import custom_types  # noqa: F401
 
 
 # oci loggingsearch search-result search-logs -> oci loggingsearch search-logs
@@ -46,45 +43,44 @@ def search_logs_extended(ctx, from_json, time_start, time_end, search_query, is_
     response = None
 
     if all_pages:
-      # the SDK's search_logs function does not support the standard OCI pagination
-      # so this alternative implementation does that
+        # the SDK's search_logs function does not support the standard OCI pagination
+        # so this alternative implementation does that
 
-      subresult = client.search_logs(
-        search_logs_details=_details,
-        **kwargs
-      )
+        subresult = client.search_logs(
+            search_logs_details=_details,
+            **kwargs
+        )
 
-      data = subresult.data.results
-      next_page = subresult.next_page
-      while next_page:
-        subresult = client.search_logs( 
-           search_logs_details=_details,
-           page=next_page, 
-           **kwargs )
-        data += subresult.data.results
-
+        data = subresult.data.results
         next_page = subresult.next_page
+        while next_page:
+            subresult = client.search_logs(
+                search_logs_details=_details,
+                page=next_page,
+                **kwargs)
+            data += subresult.data.results
 
-      from oci.response import Response
-      response = Response(
-         status=200,
-         headers=subresult.headers,
-         request=None,
-         data = {
-            "fields": None,
-            "results": data,
-            "summary": {
-              "field-count": None,
-              "result-count": len(data)
+            next_page = subresult.next_page
+
+        from oci.response import Response
+        response = Response(
+            status=200,
+            headers=subresult.headers,
+            request=None,
+            data={
+                "fields": None,
+                "results": data,
+                "summary": {
+                    "field-count": None,
+                    "result-count": len(data)
+                }
             }
-         }
-      )
+        )
 
     else:
-      response = client.search_logs(
-          search_logs_details=_details,
-          **kwargs
-      )
-    
+        response = client.search_logs(
+            search_logs_details=_details,
+            **kwargs
+        )
+
     cli_util.render_response(response, ctx)
-       
